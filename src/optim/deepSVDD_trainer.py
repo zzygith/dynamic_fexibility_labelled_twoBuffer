@@ -86,7 +86,14 @@ class DeepSVDDTrainer(BaseTrainer):
                     scores = dist - self.R ** 2
                     loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
                 else:
-                    loss = torch.mean(dist)
+                    scores,indices = torch.sort(dist)
+                    loss = 0
+                    
+                    #sp: 0.95, random data: 0.9
+                    for i in range(1,6):
+                        loss = loss + 5*i*scores[int(0.9*len(scores))-i]
+                        loss = loss - i*scores[int(0.9*len(scores))+i]
+                    
                 loss.backward()
                 optimizer.step()
 
