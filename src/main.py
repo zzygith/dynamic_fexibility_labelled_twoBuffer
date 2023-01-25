@@ -198,11 +198,14 @@ def main(dataset_name, net_name, xp_path, data_path, load_config, load_model, ob
     np.set_printoptions(threshold=sys.maxsize)
     
     print (np.array(deep_SVDD.c))
+    print (np.array(deep_SVDD.R))
     
-    res = deep_SVDD.net.state_dict()
+    deep_SVDD.save_model(export_model=xp_path + '/model.tar')
+
+#     res = deep_SVDD.net.state_dict()
     
-    for key, value in deep_SVDD.net.state_dict().items():
-	    print(np.array(value))
+#     for key, value in deep_SVDD.net.state_dict().items():
+# 	    print(np.array(value))
     
 
 if __name__ == '__main__':
