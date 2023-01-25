@@ -200,7 +200,7 @@ def main(dataset_name, net_name, xp_path, data_path, load_config, load_model, ob
     print (np.array(deep_SVDD.c))
     print (np.array(deep_SVDD.R))
     
-    deep_SVDD.save_model(export_model=xp_path + '/model.tar',save_ae=Flase)
+    deep_SVDD.save_model(export_model=xp_path + '/model.tar',save_ae=False)
 
 #     res = deep_SVDD.net.state_dict()
     
