@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from base.base_net import BaseNet
 
 
-class MINE_net3(BaseNet):
+class MINE_net1D(BaseNet):
 
     def __init__(self):
         super().__init__()
