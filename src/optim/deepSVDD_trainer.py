@@ -77,7 +77,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 inputs = inputs.to(self.device)
 
                 inputsTheta=inputs.cpu().detach().numpy()
-                inputsTheta=inputsTheta.flatten()[0]
+                #inputsTheta=inputsTheta.flatten()[0]
 
                 # Zero the network parameter gradients
                 optimizer.zero_grad()
@@ -86,24 +86,41 @@ class DeepSVDDTrainer(BaseTrainer):
                 outputs = net(inputs)
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
 
-                nU=3
-                uRangeLow=0
-                uRangeHigh=3
-                uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
+                distArray = dist.cpu().detach().numpy()
+                distConstrainFlag=np.zeros_like(distArray)
+                for i in range(0,len(distConstrainFlag)):
+                    satisfiedNum=0
+                    nU=3
+                    uRangeLow=0
+                    uRangeHigh=3
+                    uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
+                    for k in uRandom:
+                        if inputsTheta[i]+k>0:
+                            satisfiedNum=satisfiedNum+1
+                    distConstrainFlag[i]=satisfiedNum
 
-                allUnsatisfiedFlag=True
-                lossTRY=0.0
+                distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
+                logger.info(distConstrainFlagTensor)
 
-                for i in uRandom:
-                    logger.info('inputsTheta %f' %inputsTheta)
-                    logger.info('uRandom %f' %i)
-                    logger.info(inputs)
-                    if self.condition(inputsTheta,i):
-                        lossTRY=lossTRY+torch.mean(dist)
-                        allUnsatisfiedFlag=False
 
-                if allUnsatisfiedFlag:
-                    lossTRY=torch.mean(dist)**(-1)
+                # nU=3
+                # uRangeLow=0
+                # uRangeHigh=3
+                # uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
+
+                # allUnsatisfiedFlag=True
+                # lossTRY=0.0
+
+                # for i in uRandom:
+                #     logger.info('inputsTheta %f' %inputsTheta)
+                #     logger.info('uRandom %f' %i)
+                #     logger.info(inputs)
+                #     if self.condition(inputsTheta,i):
+                #         lossTRY=lossTRY+torch.mean(dist)
+                #         allUnsatisfiedFlag=False
+
+                # if allUnsatisfiedFlag:
+                #     lossTRY=torch.mean(dist)**(-1)
 #############################################################################
                 # for iid in inputs:
                 #     outputiid = net(iid)
