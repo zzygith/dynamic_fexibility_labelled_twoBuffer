@@ -95,8 +95,8 @@ class DeepSVDDTrainer(BaseTrainer):
                 lossTRY=0.0
 
                 for i in uRandom:
-                    logger.info('inputsTheta',inputsTheta)
-                    logger.info('uRandom',i)
+                    logger.info('inputsTheta %f' %inputsTheta)
+                    logger.info('uRandom %f' %i)
                     if self.condition(inputsTheta,i):
                         lossTRY=lossTRY+torch.mean(dist)
                         allUnsatisfiedFlag=False
