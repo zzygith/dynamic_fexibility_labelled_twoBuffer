@@ -28,6 +28,10 @@ class DeepSVDDTrainer(BaseTrainer):
         self.c = torch.tensor(c, device=self.device) if c is not None else None
         self.nu = nu
 
+        self.eps=1e-6 #to avoid inf
+        self.eta=1 #weighting for unsatisfied constraints
+        self.penalty=torch.tensor(-1.0, device=self.device)
+
         # Optimization parameters
         self.warm_up_n_epochs = 10  # number of training epochs for soft-boundary Deep SVDD before radius R gets updated
 
@@ -90,22 +94,22 @@ class DeepSVDDTrainer(BaseTrainer):
                 distConstrainFlag=np.zeros_like(distArray)
                 for i in range(0,len(distConstrainFlag)):
                     satisfiedNum=0
-                    nU=3
+                    nU=300
                     uRangeLow=0
                     uRangeHigh=3
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
                         if self.condition(inputsTheta[i],k):
                             satisfiedNum=satisfiedNum+1
-                    # for k in uRandom:
-                    #     if inputsTheta[i]+k>4:
-                    #         satisfiedNum=satisfiedNum+1
                     distConstrainFlag[i]=satisfiedNum
 
                 distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
                 logger.info(distConstrainFlagTensor)
                 satisfiedTheta = torch.where(distConstrainFlagTensor > 0, torch.flatten(inputs), distConstrainFlagTensor)
                 logger.info(satisfiedTheta)
+
+                losses=torch.where(distConstrainFlagTensor > 0, dist*distConstrainFlagTensor, self.eta * ((dist + self.eps) **self.penalty))
+                loss = torch.mean(losses)
 
                 # nU=3
                 # uRangeLow=0
@@ -125,18 +129,12 @@ class DeepSVDDTrainer(BaseTrainer):
 
                 # if allUnsatisfiedFlag:
                 #     lossTRY=torch.mean(dist)**(-1)
-#############################################################################
-                # for iid in inputs:
-                #     outputiid = net(iid)
-                #     distiid = torch.sum((outputiid - self.c) ** 2, dim=1)
-                #     distiidValue=
-
 
 ###############################################################################
 
-                if self.objective == 'soft-boundary':
-                    scores = dist - self.R ** 2
-                    loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
+                # if self.objective == 'soft-boundary':
+                #     scores = dist - self.R ** 2
+                #     loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
                 ##################################
                 #else:
                 #    scores,indices = torch.sort(dist)
@@ -150,8 +148,8 @@ class DeepSVDDTrainer(BaseTrainer):
                 #loss.backward()
                 #optimizer.step()
                 ###################################
-                else:
-                    loss = torch.mean(dist)
+                # else:
+                #     loss = torch.mean(dist)
 
 
 
