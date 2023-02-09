@@ -95,7 +95,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     uRangeHigh=3
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
-                        if inputsTheta[i]+k>0:
+                        if inputsTheta[i]+k>4:
                             satisfiedNum=satisfiedNum+1
                     distConstrainFlag[i]=satisfiedNum
 
