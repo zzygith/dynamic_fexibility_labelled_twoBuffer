@@ -97,13 +97,21 @@ class DeepSVDDTrainer(BaseTrainer):
                 for i in uRandom:
                     logger.info('inputsTheta %f' %inputsTheta)
                     logger.info('uRandom %f' %i)
+                    logger.info(inputs)
                     if self.condition(inputsTheta,i):
                         lossTRY=lossTRY+torch.mean(dist)
                         allUnsatisfiedFlag=False
 
                 if allUnsatisfiedFlag:
                     lossTRY=torch.mean(dist)**(-1)
+#############################################################################
+                # for iid in inputs:
+                #     outputiid = net(iid)
+                #     distiid = torch.sum((outputiid - self.c) ** 2, dim=1)
+                #     distiidValue=
 
+
+###############################################################################
 
                 if self.objective == 'soft-boundary':
                     scores = dist - self.R ** 2
