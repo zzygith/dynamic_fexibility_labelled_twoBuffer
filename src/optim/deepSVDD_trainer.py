@@ -104,7 +104,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
                 distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
                 logger.info(distConstrainFlagTensor)
-                satisfiedTheta = torch.where(distConstrainFlagTensor > 0, inputs, distConstrainFlagTensor)
+                satisfiedTheta = torch.where(distConstrainFlagTensor > 0, torch.flatten(inputs), distConstrainFlagTensor)
                 logger.info(satisfiedTheta)
 
                 # nU=3
