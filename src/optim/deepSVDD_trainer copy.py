@@ -76,35 +76,12 @@ class DeepSVDDTrainer(BaseTrainer):
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
 
-                inputsTheta=inputs.cpu().detach().numpy()
-                inputsTheta=inputsTheta.flatten()[0]
-
                 # Zero the network parameter gradients
                 optimizer.zero_grad()
 
                 # Update network parameters via backpropagation: forward + backward + optimize
                 outputs = net(inputs)
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
-
-                nU=3
-                uRangeLow=0
-                uRangeHigh=3
-                uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
-
-                allUnsatisfiedFlag=True
-                lossTRY=0.0
-
-                for i in uRandom:
-                    logger.info('inputsTheta',inputsTheta)
-                    logger.info('uRandom',i)
-                    if condition(inputsTheta,i):
-                        lossTRY=lossTRY+torch.mean(dist)
-                        allUnsatisfiedFlag=False
-
-                if allUnsatisfiedFlag:
-                    lossTRY=torch.mean(dist)**(-1)
-
-
                 if self.objective == 'soft-boundary':
                     scores = dist - self.R ** 2
                     loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
@@ -123,10 +100,6 @@ class DeepSVDDTrainer(BaseTrainer):
                 ###################################
                 else:
                     loss = torch.mean(dist)
-
-
-
-
                 loss.backward()
                 optimizer.step()
                 # Update hypersphere radius R on mini-batch distances
@@ -195,16 +168,6 @@ class DeepSVDDTrainer(BaseTrainer):
         logger.info('Test set AUC: {:.2f}%'.format(100. * self.test_auc))
 
         logger.info('Finished testing.')
-
-
-    def condition(self,theta,z):
-        flag=True
-        if z-theta>0 or -z-theta/3+4/3>0 or z+theta-4>0:
-            flag=False
-        return flag
-
-
-
 
     def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
         """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
