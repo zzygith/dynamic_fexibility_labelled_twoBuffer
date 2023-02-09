@@ -95,13 +95,17 @@ class DeepSVDDTrainer(BaseTrainer):
                     uRangeHigh=3
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
-                        if inputsTheta[i]+k>4:
+                        if self.condition(inputsTheta[i],k):
                             satisfiedNum=satisfiedNum+1
+                    # for k in uRandom:
+                    #     if inputsTheta[i]+k>4:
+                    #         satisfiedNum=satisfiedNum+1
                     distConstrainFlag[i]=satisfiedNum
 
                 distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
                 logger.info(distConstrainFlagTensor)
-
+                satisfiedTheta = torch.where(distConstrainFlagTensor > 0, inputs, distConstrainFlagTensor)
+                logger.info(satisfiedTheta)
 
                 # nU=3
                 # uRangeLow=0
@@ -223,9 +227,9 @@ class DeepSVDDTrainer(BaseTrainer):
 
 
     def condition(self,theta,z):
-        flag=True
-        if z-theta>0 or -z-theta/3+4/3>0 or z+theta-4>0:
-            flag=False
+        flag=False
+        if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+            flag=True
         return flag
 
 
