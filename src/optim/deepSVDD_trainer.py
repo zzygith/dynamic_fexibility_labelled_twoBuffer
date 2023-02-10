@@ -30,7 +30,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         self.eps=1e-6 #to avoid inf
         self.eta=1 #weighting for unsatisfied constraints #1000 #10
-        self.satisfiedP = 500
+        self.satisfiedP = 100
         self.penalty = torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
@@ -265,7 +265,7 @@ class DeepSVDDTrainer(BaseTrainer):
     def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
         """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
         n_samples = 0
-        c = torch.ones(net.rep_dim, device=self.device)*2
+        c = torch.ones(net.rep_dim, device=self.device)*100
         return c
 
 def get_radius(dist: torch.Tensor, nu: float):
