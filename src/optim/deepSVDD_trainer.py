@@ -238,28 +238,34 @@ class DeepSVDDTrainer(BaseTrainer):
 
 
 
+    # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
+    #     """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
+    #     n_samples = 0
+    #     c = torch.zeros(net.rep_dim, device=self.device)
+    #
+    #     net.eval()
+    #     with torch.no_grad():
+    #         for data in train_loader:
+    #             # get the inputs of the batch
+    #             inputs, _, _ = data
+    #             inputs = inputs.to(self.device)
+    #             outputs = net(inputs)
+    #             n_samples += outputs.shape[0]
+    #             c += torch.sum(outputs, dim=0)
+    #     c /= n_samples
+    #
+    #     c[(abs(c) < 0.01) & (c < 0)] = -0.01
+    #     c[(abs(c) < 0.01) & (c >= 0)] = 0.01
+    #
+    #
+    #     return c
+
+
     def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
         """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
         n_samples = 0
-        c = torch.zeros(net.rep_dim, device=self.device)
-
-        net.eval()
-        with torch.no_grad():
-            for data in train_loader:
-                # get the inputs of the batch
-                inputs, _, _ = data
-                inputs = inputs.to(self.device)
-                outputs = net(inputs)
-                n_samples += outputs.shape[0]
-                c += torch.sum(outputs, dim=0)
-        c /= n_samples
-
-        c[(abs(c) < 0.01) & (c < 0)] = -0.01
-        c[(abs(c) < 0.01) & (c >= 0)] = 0.01
-
-
+        c = torch.ones(net.rep_dim, device=self.device)*2
         return c
-
 
 def get_radius(dist: torch.Tensor, nu: float):
     """Optimally solve for radius R via the (1-nu)-quantile of distances."""
