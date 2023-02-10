@@ -30,7 +30,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         self.eps=1e-6 #to avoid inf
         self.eta=1 #weighting for unsatisfied constraints #1000 #10
-        self.satisfiedP = 100
+        self.satisfiedP = 10
         self.penalty = torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
