@@ -29,7 +29,7 @@ class DeepSVDDTrainer(BaseTrainer):
         self.nu = nu
 
         self.eps=1e-6 #to avoid inf
-        self.eta=1000 #weighting for unsatisfied constraints
+        self.eta=0.01 #weighting for unsatisfied constraints
         self.penalty=torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
@@ -109,7 +109,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 satisfiedTheta = torch.where(distConstrainFlagTensor > 0, torch.flatten(inputs), distConstrainFlagTensor)
                 logger.info(satisfiedTheta)
 
-                losses=torch.where(distConstrainFlagTensor > 0, dist*distConstrainFlagTensor, self.eta * ((dist + self.eps)**(-1.0)))
+                losses=torch.where(distConstrainFlagTensor > 0, dist*distConstrainFlagTensor, self.eta * ((dist + self.eps)**self.penalty))
                 logger.info(losses)
 
                 loss = torch.mean(losses)
