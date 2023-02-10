@@ -29,7 +29,7 @@ class DeepSVDDTrainer(BaseTrainer):
         self.nu = nu
 
         self.eps=1e-6 #to avoid inf
-        self.eta=10 #weighting for unsatisfied constraints #1000 #10
+        self.eta=100 #weighting for unsatisfied constraints #1000 #10
         self.satisfiedP = 100
         self.penalty = torch.tensor(-1.0, device=self.device)
 
