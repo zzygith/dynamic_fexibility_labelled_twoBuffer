@@ -18,20 +18,20 @@ class MINE_net1D(BaseNet):
         
 
         self.fc1 = nn.Linear(1, rep, bias=True)
-        #self.relu1 = nn.ReLU()
-        self.relu1 = nn.LeakyReLU(0.1)
+        self.relu1 = nn.ReLU()
+        #self.relu1 = nn.LeakyReLU(0.1)
         
         self.fc2 = nn.Linear(rep, rep, bias=True)
-        #self.relu2 = nn.ReLU()
-        self.relu2 = nn.LeakyReLU(0.1)
+        self.relu2 = nn.ReLU()
+        #self.relu2 = nn.LeakyReLU(0.1)
         
         self.fc3 = nn.Linear(rep, rep, bias=True)
-        #self.relu3 = nn.ReLU()
-        self.relu3 = nn.LeakyReLU(0.1)
+        self.relu3 = nn.ReLU()
+        #self.relu3 = nn.LeakyReLU(0.1)
 
         self.fc4 = nn.Linear(rep, rep, bias=True)
-        #self.relu4 = nn.ReLU()
-        self.relu4 = nn.LeakyReLU(0.1)
+        self.relu4 = nn.ReLU()
+        #self.relu4 = nn.LeakyReLU(0.1)
 
         self.fc5 = nn.Linear(rep, output_dim, bias=True)
         
