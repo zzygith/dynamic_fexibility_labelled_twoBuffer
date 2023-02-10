@@ -14,7 +14,7 @@ import numpy as np
 
 class DeepSVDDTrainer(BaseTrainer):
 
-    def __init__(self, objective, R, c, nu: float, optimizer_name: str = 'adam', lr: float = 0.01, n_epochs: int = 150,
+    def __init__(self, objective, R, c, nu: float, optimizer_name: str = 'adam', lr: float = 0.0001, n_epochs: int = 150,
                  lr_milestones: tuple = (), batch_size: int = 128, weight_decay: float = 1e-6, device: str = 'cuda',
                  n_jobs_dataloader: int = 0):
         super().__init__(optimizer_name, lr, n_epochs, lr_milestones, batch_size, weight_decay, device,
@@ -29,7 +29,7 @@ class DeepSVDDTrainer(BaseTrainer):
         self.nu = nu
 
         self.eps=1e-6 #to avoid inf
-        self.eta=10 #weighting for unsatisfied constraints
+        self.eta=100 #weighting for unsatisfied constraints
         self.penalty=torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
