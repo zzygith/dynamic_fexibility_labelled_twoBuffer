@@ -29,8 +29,9 @@ class DeepSVDDTrainer(BaseTrainer):
         self.nu = nu
 
         self.eps=1e-6 #to avoid inf
-        self.eta=10 #weighting for unsatisfied constraints #1000
-        self.penalty=torch.tensor(-1.0, device=self.device)
+        self.eta=1 #weighting for unsatisfied constraints #1000 #10
+        self.satisfiedP = 50
+        self.penalty = torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
         self.warm_up_n_epochs = 10  # number of training epochs for soft-boundary Deep SVDD before radius R gets updated
@@ -107,7 +108,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 ####check the satisfied theta
                 # logger.info(distConstrainFlagTensor)
                 satisfiedTheta = torch.where(distConstrainFlagTensor > 0, torch.flatten(inputs), distConstrainFlagTensor)
-                losses=torch.where(distConstrainFlagTensor > 0, dist*distConstrainFlagTensor, self.eta * ((dist + self.eps)**self.penalty))
+                losses=torch.where(distConstrainFlagTensor > 0, self.satisfiedP*dist*distConstrainFlagTensor, self.eta * ((dist + self.eps)**self.penalty))
 
                 # logger.info(satisfiedTheta)
                 # logger.info(losses)
