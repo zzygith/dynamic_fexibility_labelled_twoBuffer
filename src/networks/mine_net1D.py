@@ -17,13 +17,13 @@ class MINE_net1D(BaseNet):
         self.rep_dim = output_dim
         
 
-        self.fc1 = nn.Linear(1, rep, bias=False)
+        self.fc1 = nn.Linear(1, rep, bias=True)
         self.relu1 = nn.ReLU()
         
-        self.fc2 = nn.Linear(rep, rep, bias=False)
+        self.fc2 = nn.Linear(rep, rep, bias=True)
         self.relu2 = nn.ReLU()
         
-        self.fc3 = nn.Linear(rep, output_dim, bias=False)
+        self.fc3 = nn.Linear(rep, output_dim, bias=True)
         
         
     def forward(self, x):
