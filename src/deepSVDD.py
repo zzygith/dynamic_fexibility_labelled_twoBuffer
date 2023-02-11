@@ -34,6 +34,7 @@ class DeepSVDD(object):
         self.nu = nu
         self.R = 0.0  # hypersphere radius R
         self.c = None  # hypersphere center c
+        self.lossHistoryToDraw=None
 
         self.net_name = None
         self.net = None  # neural network \phi
@@ -71,6 +72,7 @@ class DeepSVDD(object):
         self.R = float(self.trainer.R.cpu().data.numpy())  # get float
         self.c = self.trainer.c.cpu().data.numpy().tolist()  # get list
         self.results['train_time'] = self.trainer.train_time
+        self.lossHistoryToDraw=self.trainer.lossHistory.cpu().data.numpy().tolist()
 
     def test(self, dataset: BaseADDataset, device: str = 'cuda', n_jobs_dataloader: int = 0):
         """Tests the Deep SVDD model on the test data."""
