@@ -144,6 +144,6 @@ class DeepSVDD(object):
         with open(export_json, 'w') as fp:
             json.dump(self.results, fp)
 
-    def save_lossHistory(self, export_json):
+    def save_lossHistory(self, export_path):
         """Save loss to a txt"""
-        np.save(export_json,np.array(self.lossHistoryToDraw))
+        np.save(export_path,np.array(self.lossHistoryToDraw))

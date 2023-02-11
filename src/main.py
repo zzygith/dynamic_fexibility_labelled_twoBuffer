@@ -203,7 +203,7 @@ def main(dataset_name, net_name, xp_path, data_path, load_config, load_model, ob
     
     deep_SVDD.save_model(export_model=xp_path + '/model.tar',save_ae=False)
 
-    deep_SVDD.save_lossHistory(export_model=xp_path + '/loss.txt')
+    deep_SVDD.save_lossHistory(export_path=xp_path + '/loss.txt')
 
     plt.plot(deep_SVDD.lossHistoryToDraw)
     plt.savefig(xp_path+'/loss.png')
