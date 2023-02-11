@@ -13,6 +13,7 @@ from utils.config import Config
 from utils.visualization.plot_images_grid import plot_images_grid
 from deepSVDD import DeepSVDD
 from datasets.main import load_dataset
+import matplotlib.pyplot as plt
 
 
 ################################################################################
@@ -201,6 +202,9 @@ def main(dataset_name, net_name, xp_path, data_path, load_config, load_model, ob
     print (np.array(deep_SVDD.R))
     
     deep_SVDD.save_model(export_model=xp_path + '/model.tar',save_ae=False)
+    
+    plt.plot(deep_SVDD.lossHistoryToDraw)
+    plt.show()
 
 #     res = deep_SVDD.net.state_dict()
     

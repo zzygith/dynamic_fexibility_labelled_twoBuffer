@@ -9,7 +9,6 @@ import time
 import torch
 import torch.optim as optim
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class DeepSVDDTrainer(BaseTrainer):
@@ -41,11 +40,10 @@ class DeepSVDDTrainer(BaseTrainer):
         self.test_auc = None
         self.test_time = None
         self.test_scores = None
+        self.lossHistory=[]
 
     def train(self, dataset: BaseADDataset, net: BaseNet):
         logger = logging.getLogger()
-
-        loss_array=[]
         # Set device for network
         net = net.to(self.device)
 
@@ -177,15 +175,16 @@ class DeepSVDDTrainer(BaseTrainer):
             if epoch == self.n_epochs - 1:
                 print("LOSS", loss_epoch / n_batches)
             
-            loss_array.append(loss_epoch)
+            self.lossHistory.append(loss_epoch)
 
         self.train_time = time.time() - start_time
         logger.info('Training time: %.3f' % self.train_time)
 
         logger.info('Finished training.')
-        plt.plot(loss_array)
-        plt.show()
+#####################################################################        
 
+        
+########################################################################
         return net
 
     def test(self, dataset: BaseADDataset, net: BaseNet):
