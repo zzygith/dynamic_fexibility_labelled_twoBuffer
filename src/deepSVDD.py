@@ -146,4 +146,4 @@ class DeepSVDD(object):
 
     def save_lossHistory(self, export_path):
         """Save loss to a txt"""
-        np.save(export_path,np.array(self.lossHistoryToDraw))
+        np.savetxt(export_path,np.array(self.lossHistoryToDraw),delimiter=",")
