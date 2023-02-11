@@ -1,4 +1,5 @@
 import json
+import numpy as np
 import torch
 
 from base.base_dataset import BaseADDataset
@@ -142,3 +143,7 @@ class DeepSVDD(object):
         """Save results dict to a JSON-file."""
         with open(export_json, 'w') as fp:
             json.dump(self.results, fp)
+
+    def save_lossHistory(self, export_json):
+        """Save loss to a txt"""
+        np.save(export_json,np.array(self.lossHistoryToDraw))
