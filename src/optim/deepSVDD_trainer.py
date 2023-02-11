@@ -176,7 +176,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 print("LOSS", loss_epoch / n_batches)
             
             self.lossHistory.append(loss_epoch)
-
+        self.lossHistory=torch.cat(self.lossHistory, dim=1)
         self.train_time = time.time() - start_time
         logger.info('Training time: %.3f' % self.train_time)
 
