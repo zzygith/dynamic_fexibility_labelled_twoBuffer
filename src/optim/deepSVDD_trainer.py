@@ -27,10 +27,11 @@ class DeepSVDDTrainer(BaseTrainer):
         self.c = torch.tensor(c, device=self.device) if c is not None else None
         self.nu = nu
 
-        self.eps=1e-6 #to avoid inf
+        #self.eps=1e-6 #to avoid inf
+        self.eps=1e-10
         self.eta=100 #weighting for unsatisfied constraints #1000 #10 #good eta10 sa100
         #self.satisfiedP = 1000
-        self.satisfiedP = 1000000
+        self.satisfiedP = 100
         self.penalty = torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
