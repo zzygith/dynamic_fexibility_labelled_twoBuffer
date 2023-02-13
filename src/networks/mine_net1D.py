@@ -19,19 +19,19 @@ class MINE_net1D(BaseNet):
 
         self.fc1 = nn.Linear(1, rep, bias=True)
         #self.relu1 = nn.ReLU()
-        self.relu1 = nn.ELU()
+        self.relu1 = nn.Tanhshrink()
         
         self.fc2 = nn.Linear(rep, rep, bias=True)
         #self.relu2 = nn.ReLU()
-        self.relu2 = nn.ELU()
+        self.relu2 = nn.Tanhshrink()
         
         self.fc3 = nn.Linear(rep, rep, bias=True)
         #self.relu3 = nn.ReLU()
-        self.relu3 = nn.ELU()
+        self.relu3 = nn.Tanhshrink()
 
         self.fc4 = nn.Linear(rep, rep, bias=True)
         #self.relu4 = nn.ReLU()
-        self.relu4 = nn.ELU()
+        self.relu4 = nn.Tanhshrink()
 
         self.fc5 = nn.Linear(rep, output_dim, bias=True)
         
