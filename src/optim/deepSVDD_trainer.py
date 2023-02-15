@@ -32,7 +32,7 @@ class DeepSVDDTrainer(BaseTrainer):
         self.eta=100 #weighting for unsatisfied constraints #1000 #10 #good eta10 sa100
         #self.satisfiedP = 1000 #relu, with counting penalty
         #self.satisfiedP = 10 #tanh, all parameter 100:10, center(2,2)
-        self.satisfiedP = 50
+        self.satisfiedP = 30
         self.penalty = torch.tensor(-1.0, device=self.device)
 
         # Optimization parameters
