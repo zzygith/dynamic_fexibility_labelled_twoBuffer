@@ -126,7 +126,7 @@ def main(dataset_name, net_name, xp_path, data_path, load_config, load_model, ob
     dataset = load_dataset(dataset_name, data_path, normal_class)
 
     # Initialize DeepSVDD model and set neural network \phi
-    deep_SVDD = DeepSVDD(cfg.settings['objective'], cfg.settings['nu'])
+    deep_SVDD = DeepSVDD(cfg.settings['objective'], cfg.settings['nu'],dataset_name)
     deep_SVDD.set_network(net_name)
     # If specified, load Deep SVDD model (radius R, center c, network weights, and possibly autoencoder weights)
     if load_model:

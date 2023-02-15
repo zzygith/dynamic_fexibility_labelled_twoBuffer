@@ -26,13 +26,14 @@ class DeepSVDD(object):
         results: A dictionary to save the results.
     """
 
-    def __init__(self, objective: str = 'one-class', nu: float = 0.1):
+    def __init__(self, objective: str = 'one-class', nu: float = 0.1, dataForConstraints:str='mine'):
         """Inits DeepSVDD with one of the two objectives and hyperparameter nu."""
 
         assert objective in ('one-class', 'soft-boundary'), "Objective must be either 'one-class' or 'soft-boundary'."
         self.objective = objective
         assert (0 < nu) & (nu <= 1), "For hyperparameter nu, it must hold: 0 < nu <= 1."
         self.nu = nu
+        self.dataForConstraints=dataForConstraints
         self.R = 0.0  # hypersphere radius R
         self.c = None  # hypersphere center c
         self.lossHistoryToDraw=None
@@ -67,7 +68,7 @@ class DeepSVDD(object):
         self.optimizer_name = optimizer_name
         self.trainer = DeepSVDDTrainer(self.objective, self.R, self.c, self.nu, optimizer_name, lr=lr,
                                        n_epochs=n_epochs, lr_milestones=lr_milestones, batch_size=batch_size,
-                                       weight_decay=weight_decay, device=device, n_jobs_dataloader=n_jobs_dataloader)
+                                       weight_decay=weight_decay, device=device, n_jobs_dataloader=n_jobs_dataloader, dataForConstraints=self.dataForConstraints)
         # Get the model
         self.net = self.trainer.train(dataset, self.net)
         self.R = float(self.trainer.R.cpu().data.numpy())  # get float

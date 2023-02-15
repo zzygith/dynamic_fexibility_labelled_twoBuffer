@@ -15,7 +15,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
     def __init__(self, objective, R, c, nu: float, optimizer_name: str = 'adam', lr: float = 0.001, n_epochs: int = 150,
                  lr_milestones: tuple = (), batch_size: int = 128, weight_decay: float = 1e-6, device: str = 'cuda',
-                 n_jobs_dataloader: int = 0):
+                 n_jobs_dataloader: int = 0, dataForConstraints: str = 'mine'):
         super().__init__(optimizer_name, lr, n_epochs, lr_milestones, batch_size, weight_decay, device,
                          n_jobs_dataloader)
 
@@ -26,6 +26,8 @@ class DeepSVDDTrainer(BaseTrainer):
         self.R = torch.tensor(R, device=self.device)  # radius R initialized with 0 by default.
         self.c = torch.tensor(c, device=self.device) if c is not None else None
         self.nu = nu
+
+        self.dataForConstraints=dataForConstraints
 
         #self.eps=1e-6 #to avoid inf
         self.eps=1e-10
@@ -46,6 +48,9 @@ class DeepSVDDTrainer(BaseTrainer):
         self.lossHistory=[]
 
     def train(self, dataset: BaseADDataset, net: BaseNet):
+
+        constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
+
         logger = logging.getLogger()
         # Set device for network
         net = net.to(self.device)
@@ -103,7 +108,8 @@ class DeepSVDDTrainer(BaseTrainer):
                     uRangeHigh=3
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
-                        if self.condition(inputsTheta[i],k):
+                        #if self.condition(inputsTheta[i],k):
+                        if constraintsFunc(inputsTheta[i],k):
                             satisfiedNum=satisfiedNum+1
                     distConstrainFlag[i]=satisfiedNum
 
@@ -238,15 +244,37 @@ class DeepSVDDTrainer(BaseTrainer):
         logger.info('Finished testing.')
 
 
-    def condition(self,theta,z):
-        flag=False
-        if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
-            flag=True
-        return flag
+    # def condition(self,dataForConstraintsChoice,theta,z):
+    #     if dataForConstraintsChoice=='mine':
+    #         flag=False
+    #         if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+    #             flag=True
+    #         return flag
+
+    #     elif dataForConstraintsChoice=='mine_heater_1d':
+    #         flag=False
+    #         if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
+    #             flag=True
+    #         return flag
 
 
+    def conditionFunctionList(self,dataForConstraintsChoice):
+        if dataForConstraintsChoice=='mine':
+            def constraint(theta,z):
+                flag=False
+                if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+                    flag=True
+                return flag
+            return constraint
 
-
+        elif dataForConstraintsChoice=='mine_heater_1d':
+            def constraint(theta,z):
+                flag=False
+                if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+                    flag=True
+                return flag
+            return constraint
+            
     # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
     #     """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
     #     n_samples = 0
