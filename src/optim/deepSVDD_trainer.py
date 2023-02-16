@@ -270,7 +270,7 @@ class DeepSVDDTrainer(BaseTrainer):
         elif dataForConstraintsChoice=='mine_heater_1d':
             def constraint(theta,z):
                 flag=False
-                if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+                if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
                     flag=True
                 return flag
             return constraint
@@ -324,7 +324,7 @@ class DeepSVDDTrainer(BaseTrainer):
     def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
         """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
         n_samples = 0
-        c = torch.ones(net.rep_dim, device=self.device)*2
+        c = torch.ones(net.rep_dim, device=self.device)*(-2)
         return c
 
 def get_radius(dist: torch.Tensor, nu: float):
