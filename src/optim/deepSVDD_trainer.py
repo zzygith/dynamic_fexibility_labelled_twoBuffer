@@ -103,7 +103,6 @@ class DeepSVDDTrainer(BaseTrainer):
                 for i in range(0,len(distConstrainFlag)):
                     satisfiedNum=0
                     nU=300
-                    #nU=30000
                     uRangeLow=0
                     uRangeHigh=3
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)

@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 # Settings
 ################################################################################
 @click.command()
-@click.argument('dataset_name', type=click.Choice(['mnist', 'cifar10', 'mine']))
+@click.argument('dataset_name', type=click.Choice(['mnist', 'cifar10', 'mine','mine_heater_1d']))
 @click.argument('net_name', type=click.Choice(['mnist_LeNet', 'cifar10_LeNet', 'cifar10_LeNet_ELU', 'mine_net2', 'mine_net3', 'mine_net4', 'mine_net5', 'mine_sp', 'mine_net1D']))
 @click.argument('xp_path', type=click.Path(exists=True))
 @click.argument('data_path', type=click.Path(exists=True))
