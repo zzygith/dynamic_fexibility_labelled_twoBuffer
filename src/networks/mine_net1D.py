@@ -14,6 +14,7 @@ class MINE_net1D(BaseNet):
         #20: 50
         rep = 50
         output_dim=2
+        #output_dim=15
         self.rep_dim = output_dim
         
 
