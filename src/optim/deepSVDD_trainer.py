@@ -102,9 +102,14 @@ class DeepSVDDTrainer(BaseTrainer):
                 distConstrainFlag=np.zeros_like(distArray)
                 for i in range(0,len(distConstrainFlag)):
                     satisfiedNum=0
-                    nU=300
+                    # nU=300
+                    # uRangeLow=0
+                    # uRangeHigh=3
+
+                    nU=500
                     uRangeLow=0
-                    uRangeHigh=3
+                    uRangeHigh=250
+
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
                         #if self.condition(inputsTheta[i],k):
