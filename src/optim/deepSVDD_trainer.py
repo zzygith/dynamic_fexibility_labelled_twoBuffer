@@ -114,7 +114,9 @@ class DeepSVDDTrainer(BaseTrainer):
                     for k in uRandom:
                         #if self.condition(inputsTheta[i],k):
                         if constraintsFunc(inputsTheta[i],k):
-                            satisfiedNum=satisfiedNum+1
+                            #satisfiedNum=satisfiedNum+1
+                            satisfiedNum=1
+                            break
                     distConstrainFlag[i]=satisfiedNum
 
                 distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
