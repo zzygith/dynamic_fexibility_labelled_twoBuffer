@@ -106,7 +106,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     # uRangeLow=0
                     # uRangeHigh=3
 
-                    nU=500
+                    nU=50000
                     uRangeLow=0
                     uRangeHigh=250
 
