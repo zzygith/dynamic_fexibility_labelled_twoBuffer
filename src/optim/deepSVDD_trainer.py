@@ -283,6 +283,8 @@ class DeepSVDDTrainer(BaseTrainer):
         elif dataForConstraintsChoice=='mine_heater_1d':
             def constraint(theta,z,stateModel):
                 flag=False
+                mlk=np.array([[1.5,22.0]])
+                mlkk=stateModel(torch.tensor(mlk,dtype=torch.float32).to(self.device))
                 if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
                     flag=True
                 return flag
