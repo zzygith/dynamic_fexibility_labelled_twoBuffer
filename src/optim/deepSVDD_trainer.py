@@ -269,6 +269,8 @@ class DeepSVDDTrainer(BaseTrainer):
     #             return flag
     #         return constraint
  
+
+#look for the reason why it's so slow
     def conditionFunctionList(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
             def constraint(theta,z,stateModel):
@@ -281,20 +283,40 @@ class DeepSVDDTrainer(BaseTrainer):
         elif dataForConstraintsChoice=='mine_heater_1d':
             def constraint(theta,z,stateModel):
                 flag=False
-                #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
-                stateInput=torch.tensor(np.append(theta.flatten(),z),dtype=torch.float32).to(self.device)
-                #states=stateModel(stateInput).cpu().detach().numpy().flatten()
-                states=stateModel(stateInput)
-                states=torch.flatten(states)
-                t1=states[0]
-                t2=states[1]
-                t3=states[2]
-                #t4=states[3]
-                if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
-                     flag=True
-                return flag                   
-
+                if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
+                    flag=True
+                return flag
             return constraint
+
+
+
+
+    # def conditionFunctionList(self,dataForConstraintsChoice):
+    #     if dataForConstraintsChoice=='mine':
+    #         def constraint(theta,z,stateModel):
+    #             flag=False
+    #             if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+    #                 flag=True
+    #             return flag
+    #         return constraint
+
+    #     elif dataForConstraintsChoice=='mine_heater_1d':
+    #         def constraint(theta,z,stateModel):
+    #             flag=False
+    #             #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
+    #             stateInput=torch.tensor(np.append(theta.flatten(),z),dtype=torch.float32).to(self.device)
+    #             #states=stateModel(stateInput).cpu().detach().numpy().flatten()
+    #             states=stateModel(stateInput)
+    #             states=torch.flatten(states)
+    #             t1=states[0]
+    #             t2=states[1]
+    #             t3=states[2]
+    #             #t4=states[3]
+    #             if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
+    #                  flag=True
+    #             return flag                   
+
+    #         return constraint
 
     def stateModelFunction(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
