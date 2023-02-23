@@ -114,7 +114,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
                     for k in uRandom:
                         #if self.condition(inputsTheta[i],k):
-                        if constraintsFunc(inputsTheta[i],k):
+                        if constraintsFunc(inputsTheta[i],k,stateModel):
                             #satisfiedNum=satisfiedNum+1
                             satisfiedNum=1
                             break
@@ -271,7 +271,7 @@ class DeepSVDDTrainer(BaseTrainer):
  
     def conditionFunctionList(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
-            def constraint(theta,z):
+            def constraint(theta,z,stateModel):
                 flag=False
                 if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
                     flag=True
@@ -279,7 +279,7 @@ class DeepSVDDTrainer(BaseTrainer):
             return constraint
 
         elif dataForConstraintsChoice=='mine_heater_1d':
-            def constraint(theta,z):
+            def constraint(theta,z,stateModel):
                 flag=False
                 #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
                 stateInput=torch.tensor(np.append(theta.flatten(),z)).to(self.device)
