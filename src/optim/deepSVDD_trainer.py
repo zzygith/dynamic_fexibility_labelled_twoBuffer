@@ -282,7 +282,7 @@ class DeepSVDDTrainer(BaseTrainer):
             def constraint(theta,z,stateModel):
                 flag=False
                 #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
-                stateInput=torch.tensor(np.append(theta.flatten(),z)).to(self.device)
+                stateInput=torch.tensor(np.append(theta.flatten(),z),dtype=torch.float32).to(self.device)
                 states=stateModel(stateInput).cpu().detach().numpy().flatten()
                 t1=states[0]
                 t2=states[1]
