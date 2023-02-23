@@ -281,7 +281,8 @@ class DeepSVDDTrainer(BaseTrainer):
         elif dataForConstraintsChoice=='mine_heater_1d':
             def constraint(theta,z):
                 flag=False
-                stateInput=torch.tensor(np.array([theta,z])).to(self.device)
+                #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
+                stateInput=torch.tensor(np.append(theta.flatten(),z)).to(self.device)
                 states=stateModel(stateInput).cpu().detach().numpy().flatten()
                 t1=states[0]
                 t2=states[1]
