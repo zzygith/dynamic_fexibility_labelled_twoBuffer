@@ -295,15 +295,15 @@ class DeepSVDDTrainer(BaseTrainer):
 
     def stateModelFunction(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
-            dataRoot='./optim/heatExchangerState.pt'
+            dataRoot='./optim/heatExchangerStates.pt'
             HENStateModel = HENState().to(self.device)
-            HENStateModel = torch.load(dataRoot)
+            HENStateModel.load_state_dict(torch.load(dataRoot))
             return HENStateModel
 
         elif dataForConstraintsChoice=='mine_heater_1d':
-            dataRoot='./optim/heatExchangerState.pt'
+            dataRoot='./optim/heatExchangerStates.pt'
             HENStateModel = HENState().to(self.device)
-            HENStateModel = torch.load(dataRoot)
+            HENStateModel.load_state_dict(torch.load(dataRoot))
             return HENStateModel
             
     # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
