@@ -284,11 +284,12 @@ class DeepSVDDTrainer(BaseTrainer):
                 #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
                 stateInput=torch.tensor(np.append(theta.flatten(),z),dtype=torch.float32).to(self.device)
                 #states=stateModel(stateInput).cpu().detach().numpy().flatten()
-                states=stateModel(stateInput)[0]
+                states=stateModel(stateInput)
+                states=torch.flatten(states)
                 t1=states[0]
                 t2=states[1]
                 t3=states[2]
-                t4=states[3]
+                #t4=states[3]
                 if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
                      flag=True
                 return flag                   
