@@ -9,7 +9,7 @@ import time
 import torch
 import torch.optim as optim
 import numpy as np
-
+from .heaterExchangerState import HENState
 
 class DeepSVDDTrainer(BaseTrainer):
 
@@ -50,6 +50,7 @@ class DeepSVDDTrainer(BaseTrainer):
     def train(self, dataset: BaseADDataset, net: BaseNet):
 
         constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
+        stateModel=self.stateModelFunction(self.dataForConstraints)
 
         logger = logging.getLogger()
         # Set device for network
@@ -250,20 +251,24 @@ class DeepSVDDTrainer(BaseTrainer):
         logger.info('Finished testing.')
 
 
-    # def condition(self,dataForConstraintsChoice,theta,z):
+
+    # def conditionFunctionList(self,dataForConstraintsChoice):
     #     if dataForConstraintsChoice=='mine':
-    #         flag=False
-    #         if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
-    #             flag=True
-    #         return flag
+    #         def constraint(theta,z):
+    #             flag=False
+    #             if z-theta<=0 and -z-theta/3+4/3<=0 and z+theta-4<=0:
+    #                 flag=True
+    #             return flag
+    #         return constraint
 
     #     elif dataForConstraintsChoice=='mine_heater_1d':
-    #         flag=False
-    #         if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
-    #             flag=True
-    #         return flag
-
-
+    #         def constraint(theta,z):
+    #             flag=False
+    #             if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
+    #                 flag=True
+    #             return flag
+    #         return constraint
+ 
     def conditionFunctionList(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
             def constraint(theta,z):
@@ -276,10 +281,30 @@ class DeepSVDDTrainer(BaseTrainer):
         elif dataForConstraintsChoice=='mine_heater_1d':
             def constraint(theta,z):
                 flag=False
-                if -25*theta+z-0.5*theta*z+10<=0 and -190*theta+z+10<=0 and -270*theta+z+250<=0 and 260*theta-z-250<=0:
-                    flag=True
-                return flag
+                stateInput=torch.tensor(np.array([theta,z])).to(self.device)
+                states=stateModel(stateInput).cpu().detach().numpy().flatten()
+                t1=states[0]
+                t2=states[1]
+                t3=states[2]
+                t4=states[3]
+                if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
+                     flag=True
+                return flag                   
+
             return constraint
+
+    def stateModelFunction(self,dataForConstraintsChoice):
+        if dataForConstraintsChoice=='mine':
+            dataRoot='./heatExchangerState.pt'
+            HENStateModel = HENState().to(self.device)
+            HENStateModel = torch.load(dataRoot)
+            return HENStateModel
+
+        elif dataForConstraintsChoice=='mine_heater_1d':
+            dataRoot='./heatExchangerState.pt'
+            HENStateModel = HENState().to(self.device)
+            HENStateModel = torch.load(dataRoot)
+            return HENStateModel
             
     # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
     #     """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
