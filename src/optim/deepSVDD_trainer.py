@@ -334,6 +334,12 @@ class DeepSVDDTrainer(BaseTrainer):
             HENStateModel = HENState().to(self.device)
             HENStateModel.load_state_dict(torch.load(dataRoot))
             return HENStateModel
+        
+        elif dataForConstraintsChoice=='mine_reactorCooler_2d':
+            dataRoot='./optim/heatExchangerStates3.pt'
+            HENStateModel = HENState().to(self.device)
+            HENStateModel.load_state_dict(torch.load(dataRoot))
+            return HENStateModel            
             
     # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
     #     """Initialize hypersphere center c as the mean from an initial forward pass on the data."""
