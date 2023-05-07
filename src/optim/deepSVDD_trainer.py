@@ -10,6 +10,7 @@ import torch
 import torch.optim as optim
 import numpy as np
 from .heaterExchangerState import HENState
+from .reactorCooler2dState import RC2DState
 
 class DeepSVDDTrainer(BaseTrainer):
 
