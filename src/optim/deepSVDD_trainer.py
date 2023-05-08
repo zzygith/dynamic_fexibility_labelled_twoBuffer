@@ -52,6 +52,16 @@ class DeepSVDDTrainer(BaseTrainer):
 
         constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
         stateModel=self.stateModelFunction(self.dataForConstraints)
+        if self.dataForConstraints=='mine':
+            nU=50
+            uRangeLow=0
+            uRangeHigh=250
+            uLength=1
+        elif self.dataForConstraints=='mine_reactorCooler_2d':
+            nU=50
+            uRangeLow = [0,3.00]
+            uRangeHigh = [6.804,3.56]
+            uLength=2
 
         logger = logging.getLogger()
         # Set device for network
@@ -108,11 +118,19 @@ class DeepSVDDTrainer(BaseTrainer):
                     # uRangeLow=0
                     # uRangeHigh=3
 
-                    nU=50
-                    uRangeLow=0
-                    uRangeHigh=250
+                    # if dataForConstraintsChoice=='mine':
+                    # nU=50
+                    # uRangeLow=0
+                    # uRangeHigh=250
+                    # uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
 
-                    uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
+                    # nU=50
+                    # U_min = [0,3.00]
+                    # U_max = [6.804,3.56]
+                    # uRandom = np.random.uniform(low=U_min, high=U_max, size=(nU,2))
+                    
+                    uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
+
                     for k in uRandom:
                         #if self.condition(inputsTheta[i],k):
                         if constraintsFunc(inputsTheta[i],k,stateModel):
@@ -319,6 +337,29 @@ class DeepSVDDTrainer(BaseTrainer):
                      flag=True
                 return flag                   
             return constraint
+        
+        elif dataForConstraintsChoice=='mine_reactorCooler_2d':
+            def constraint(theta,z,stateModel):
+                flag=False
+                Ca0=32.04
+                Tw1=300.0
+                #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
+                stateInput=torch.tensor(np.append(theta.flatten()/10.0,z.flatten()),dtype=torch.float32).to(self.device)
+                #states=stateModel(stateInput).cpu().detach().numpy().flatten()
+                states=stateModel(stateInput)
+                states=torch.flatten(states)
+                Tw2=stateInput[3]*100.0
+                Ca1=states[0]
+                T1=states[1]*10+390.
+                T2=states[2]*10+300.
+                constraint1=(Ca0-Ca1)/Ca0
+                constraint3=T1-T2
+                constraint4=T1-Tw2-11.1
+                constraint5=T2-Tw1-11.1
+                if constraint1>=0.9 and T1>=311 and T1<=389 and constraint3>=0 and constraint4>=0 and constraint5>=0:
+                     flag=True
+                return flag                   
+            return constraint        
 
     def stateModelFunction(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
