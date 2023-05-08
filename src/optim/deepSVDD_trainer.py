@@ -318,7 +318,6 @@ class DeepSVDDTrainer(BaseTrainer):
                 if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
                      flag=True
                 return flag                   
-
             return constraint
 
     def stateModelFunction(self,dataForConstraintsChoice):
@@ -337,10 +336,10 @@ class DeepSVDDTrainer(BaseTrainer):
             return HENStateModel
         
         elif dataForConstraintsChoice=='mine_reactorCooler_2d':
-            dataRoot='./optim/heatExchangerStates3.pt'
-            HENStateModel = HENState().to(self.device)
-            HENStateModel.load_state_dict(torch.load(dataRoot))
-            return HENStateModel            
+            dataRoot='./optim/partData3StepTrain_model.pt'
+            RC2DStateModel = RC2DState().to(self.device)
+            RC2DStateModel.load_state_dict(torch.load(dataRoot))
+            return RC2DStateModel            
             
     # def init_center_c(self, train_loader: DataLoader, net: BaseNet, eps=0.1):
     #     """Initialize hypersphere center c as the mean from an initial forward pass on the data."""

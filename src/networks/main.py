@@ -3,6 +3,7 @@ from .cifar10_LeNet import CIFAR10_LeNet, CIFAR10_LeNet_Autoencoder
 from .cifar10_LeNet_elu import CIFAR10_LeNet_ELU, CIFAR10_LeNet_ELU_Autoencoder
 from .mine_net3 import MINE_net3
 from .mine_net1D import MINE_net1D
+from .mine_netRC2D import MINE_netRC2D
 
 def build_network(net_name):
     """Builds the neural network."""
@@ -23,7 +24,11 @@ def build_network(net_name):
         net = MINE_net3()    
         
     if net_name == 'mine_net1D':
-        net = MINE_net1D()        
+        net = MINE_net1D()
+
+    if net_name == 'mine_netRC2D':
+        net = MINE_netRC2D()        
+                
     return net
 
 
