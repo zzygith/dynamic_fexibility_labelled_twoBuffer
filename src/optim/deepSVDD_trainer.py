@@ -52,7 +52,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
         stateModel=self.stateModelFunction(self.dataForConstraints)
-        if self.dataForConstraints=='mine':
+        if self.dataForConstraints=='mine_heater_1d':
             nU=50
             uRangeLow=0
             uRangeHigh=250
@@ -128,7 +128,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     # U_min = [0,3.00]
                     # U_max = [6.804,3.56]
                     # uRandom = np.random.uniform(low=U_min, high=U_max, size=(nU,2))
-                    
+
                     uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
 
                     for k in uRandom:
