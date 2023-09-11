@@ -11,6 +11,7 @@ import torch.optim as optim
 import numpy as np
 from .heaterExchangerState import HENState
 from .reactorCooler2dState import RC2DState
+import pyomo.environ as pm
 
 class DeepSVDDTrainer(BaseTrainer):
 
