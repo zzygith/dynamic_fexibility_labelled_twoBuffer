@@ -50,46 +50,22 @@ class DeepSVDDTrainer(BaseTrainer):
         self.lossHistory=[]
 
     def train(self, dataset: BaseADDataset, net: BaseNet):
-        model = pm.ConcreteModel()
-
-        model.h1=pm.Var(initialize=0,within=pm.Reals)
-        model.h2=pm.Var(initialize=1,within=pm.Reals)
-        model.u1=pm.Var(initialize=1,bounds=(1, 2),within=pm.Reals)
-
-
-        model.u2=pm.Var(initialize=-1,bounds=(-2, -1),within=pm.Reals)
-
-        model.Result=pm.Var(initialize=0,within=pm.Reals)
-
-        model.obj1 = pm.Objective(expr=model.Result, sense=pm.minimize)
-        model.e1 = pm.Constraint(expr = model.h1==model.u1)
-        model.e2 = pm.Constraint(expr = model.h2==model.u2+model.h1)
-        model.j1 = pm.Constraint(expr = model.h1-1-model.Result<=0)
-        model.j2 = pm.Constraint(expr = model.h2-1-model.Result<=0)
-        model.j3 = pm.Constraint(expr = 0-model.h1-model.Result<=0)
-        model.j4 = pm.Constraint(expr = 0-model.h2-model.Result<=0)
-
-        opt=pm.SolverFactory('ipopt', executable='../ipopt')
-        instance = model.create_instance()
-        results = opt.solve(instance) # solves and updates instance
-        #print('\nProfit = ', instance.obj1())
         
         constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
-        stateModel=self.stateModelFunction(self.dataForConstraints)
-        if self.dataForConstraints=='mine_heater_1d':
-            nU=50
-            uRangeLow=0
-            uRangeHigh=250
-            uLength=1
-        elif self.dataForConstraints=='mine_reactorCooler_2d':
-            nU=100
-            uRangeLow = [0,3.00]
-            uRangeHigh = [6.804,3.56]
-            uLength=2
+        # stateModel=self.stateModelFunction(self.dataForConstraints)
+        # if self.dataForConstraints=='mine_heater_1d':
+        #     nU=50
+        #     uRangeLow=0
+        #     uRangeHigh=250
+        #     uLength=1
+        # elif self.dataForConstraints=='mine_reactorCooler_2d':
+        #     nU=100
+        #     uRangeLow = [0,3.00]
+        #     uRangeHigh = [6.804,3.56]
+        #     uLength=2
 
         logger = logging.getLogger()
-        logger.info('111111111111111111111111111')
-        logger.info(instance.obj1())
+
         # Set device for network
         net = net.to(self.device)
 
@@ -155,14 +131,17 @@ class DeepSVDDTrainer(BaseTrainer):
                     # U_max = [6.804,3.56]
                     # uRandom = np.random.uniform(low=U_min, high=U_max, size=(nU,2))
 
-                    uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
+                    # uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
+                    # for k in uRandom:
+                    #     #if self.condition(inputsTheta[i],k):
+                    #     if constraintsFunc(inputsTheta[i],k,stateModel):
+                    #         #satisfiedNum=satisfiedNum+1
+                    #         satisfiedNum=1
+                    #         break
+                    # distConstrainFlag[i]=satisfiedNum
 
-                    for k in uRandom:
-                        #if self.condition(inputsTheta[i],k):
-                        if constraintsFunc(inputsTheta[i],k,stateModel):
-                            #satisfiedNum=satisfiedNum+1
-                            satisfiedNum=1
-                            break
+                    if constraintsFunc(inputsTheta[i]):
+                        satisfiedNum=1
                     distConstrainFlag[i]=satisfiedNum
 
                 distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
@@ -387,7 +366,70 @@ class DeepSVDDTrainer(BaseTrainer):
                 if constraint1>=0.9 and T1>=311 and T1<=389 and constraint3>=0 and constraint4>=0 and constraint5>=0:
                      flag=True
                 return flag                   
-            return constraint        
+            return constraint     
+        
+        elif dataForConstraintsChoice=='mine_dynamic_opt_numEX':
+            def constraint(theta):
+
+                thetaFlatten=theta.flatten()
+                theta1=thetaFlatten[0]
+                theta2=thetaFlatten[1]
+                model = pm.ConcreteModel()
+
+                # model.h1=pm.Var(initialize=0,within=)
+                # model.h2=pm.Var(initialize=1,within=pm.Reals)
+                # model.u1=pm.Var(initialize=1,bounds=(1, 2),within=pm.Reals)
+                # model.u2=pm.Var(initialize=-1,bounds=(-2, -1),within=pm.Reals)
+                # model.Result=pm.Var(initialize=0,within=pm.Reals)
+
+                model.h1=pm.Var(initialize=0,within=pm.Reals)
+                model.h2=pm.Var(initialize=1,within=pm.Reals)
+                model.u1=pm.Var(initialize=1,within=pm.Reals)
+                model.u2=pm.Var(initialize=-theta2,within=pm.Reals)
+                model.Result=pm.Var(initialize=0,within=pm.Reals)
+
+                # model.obj1 = pm.Objective(expr=model.Result, sense=pm.minimize)
+                # model.e1 = pm.Constraint(expr = model.h1==model.u1)
+                # model.e2 = pm.Constraint(expr = model.h2==model.u2+model.h1)
+                # model.j1 = pm.Constraint(expr = model.h1-1-model.Result<=0)
+                # model.j2 = pm.Constraint(expr = model.h2-1-model.Result<=0)
+                # model.j3 = pm.Constraint(expr = 0-model.h1-model.Result<=0)
+                # model.j4 = pm.Constraint(expr = 0-model.h2-model.Result<=0)
+
+                model.obj1 = pm.Objective(expr=model.Result, sense=pm.minimize)
+                model.e1 = pm.Constraint(expr = model.h1==model.u1*theta1)
+                model.e2 = pm.Constraint(expr = model.h2==model.u2*theta2+model.h1)
+                model.j1 = pm.Constraint(expr = model.h1-1-model.Result<=0)
+                model.j2 = pm.Constraint(expr = model.h2-1-model.Result<=0)
+                model.j3 = pm.Constraint(expr = 0-model.h1-model.Result<=0)
+                model.j4 = pm.Constraint(expr = 0-model.h2-model.Result<=0)
+                model.j5 = pm.Constraint(expr = 1-abs(model.u1)<=0)
+                model.j6 = pm.Constraint(expr = abs(model.u1)-2<=0)
+                model.j7 = pm.Constraint(expr = 1-abs(model.u2)<=0)
+                model.j8 = pm.Constraint(expr = abs(model.u2)-2<=0)
+
+
+                opt=pm.SolverFactory('ipopt', executable='../ipopt')
+                instance = model.create_instance()
+                results = opt.solve(instance) # solves and updates instance
+                #print('\nProfit = ', instance.obj1())
+
+                flag=False
+                # #stateInput=torch.tensor(np.array([theta.flatten(),z])).to(self.device)
+                # stateInput=torch.tensor(np.append(theta.flatten(),z),dtype=torch.float32).to(self.device)
+                # #states=stateModel(stateInput).cpu().detach().numpy().flatten()
+                # states=stateModel(stateInput)
+                # states=torch.flatten(states)
+                # t1=states[0]
+                # t2=states[1]
+                # t3=states[2]
+                # #t4=states[3]
+                # if t2-t1>=0 and t2-393>=0 and t3-313>=0 and t3<=323:
+                #      flag=True
+                if instance.obj1()<=0:
+                     flag=True
+                return flag                   
+            return constraint          
 
     def stateModelFunction(self,dataForConstraintsChoice):
         if dataForConstraintsChoice=='mine':
