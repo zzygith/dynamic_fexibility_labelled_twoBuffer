@@ -19,7 +19,7 @@ def load_dataset(dataset_name, data_path, normal_class):
     if dataset_name == 'mine' or dataset_name == 'mine_heater_1d':
         dataset = MINE_Dataset(root=data_path, normal_class=normal_class)
 
-    if dataset_name == 'mine_reactorCooler_2d':
+    if dataset_name == 'mine_reactorCooler_2d' or dataset_name == 'mine_dynamic_opt_numEX':
         dataset = MINEMD_Dataset(root=data_path, normal_class=normal_class)
 
     return dataset

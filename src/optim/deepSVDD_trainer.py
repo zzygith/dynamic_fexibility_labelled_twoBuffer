@@ -50,7 +50,30 @@ class DeepSVDDTrainer(BaseTrainer):
         self.lossHistory=[]
 
     def train(self, dataset: BaseADDataset, net: BaseNet):
+        model = pm.ConcreteModel()
 
+        model.h1=pm.Var(initialize=0,within=pm.Reals)
+        model.h2=pm.Var(initialize=1,within=pm.Reals)
+        model.u1=pm.Var(initialize=1,bounds=(1, 2),within=pm.Reals)
+
+
+        model.u2=pm.Var(initialize=-1,bounds=(-2, -1),within=pm.Reals)
+
+        model.Result=pm.Var(initialize=0,within=pm.Reals)
+
+        model.obj1 = pm.Objective(expr=model.Result, sense=pm.minimize)
+        model.e1 = pm.Constraint(expr = model.h1==model.u1)
+        model.e2 = pm.Constraint(expr = model.h2==model.u2+model.h1)
+        model.j1 = pm.Constraint(expr = model.h1-1-model.Result<=0)
+        model.j2 = pm.Constraint(expr = model.h2-1-model.Result<=0)
+        model.j3 = pm.Constraint(expr = 0-model.h1-model.Result<=0)
+        model.j4 = pm.Constraint(expr = 0-model.h2-model.Result<=0)
+
+        opt=pm.SolverFactory('ipopt', executable='../ipopt')
+        instance = model.create_instance()
+        results = opt.solve(instance) # solves and updates instance
+        #print('\nProfit = ', instance.obj1())
+        
         constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
         stateModel=self.stateModelFunction(self.dataForConstraints)
         if self.dataForConstraints=='mine_heater_1d':
@@ -65,6 +88,8 @@ class DeepSVDDTrainer(BaseTrainer):
             uLength=2
 
         logger = logging.getLogger()
+        logger.info('111111111111111111111111111')
+        logger.info(instance.obj1())
         # Set device for network
         net = net.to(self.device)
 
@@ -208,7 +233,6 @@ class DeepSVDDTrainer(BaseTrainer):
 
                 loss_epoch += loss.item()
                 n_batches += 1
-
             # log epoch statistics
             epoch_train_time = time.time() - epoch_start_time
             logger.info('  Epoch {}/{}\t Time: {:.3f}\t Loss: {:.8f}'
