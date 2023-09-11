@@ -29,11 +29,10 @@ class DeepSVDDTrainer(BaseTrainer):
         self.c = torch.tensor(c, device=self.device) if c is not None else None
         self.nu = nu
 
-        self.dataForConstraints=dataForConstraints
+        #self.dataForConstraints=dataForConstraints
 
-        #self.eps=1e-6 #to avoid inf
-        self.eps=1e-10
-        self.eta=100 #weighting for unsatisfied constraints #1000 #10 #good eta10 sa100
+        self.eps=1e-10 #to avoid inf
+        self.eta=1000 #weighting for unsatisfied constraints #1000 #10 #good eta10 sa100
         #self.satisfiedP = 1000 #relu, with counting penalty
         #self.satisfiedP = 10 #tanh, all parameter 100:10, center(2,2)
         self.satisfiedP = 10
@@ -51,7 +50,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
     def train(self, dataset: BaseADDataset, net: BaseNet):
         
-        constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
+        #constraintsFunc=self.conditionFunctionList(self.dataForConstraints)
         # stateModel=self.stateModelFunction(self.dataForConstraints)
         # if self.dataForConstraints=='mine_heater_1d':
         #     nU=50
@@ -101,50 +100,52 @@ class DeepSVDDTrainer(BaseTrainer):
             for data in train_loader:
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
-
+                inputsTimeTheta=inputs[:,0:2]
+                inputsTimeFlag=inputs[:,2:3]
                 inputsTheta=inputs.cpu().detach().numpy()
                 #inputsTheta=inputsTheta.flatten()[0]
-
+                #logger.info(inputsTimeFlag)
                 # Zero the network parameter gradients
                 optimizer.zero_grad()
 
                 # Update network parameters via backpropagation: forward + backward + optimize
-                outputs = net(inputs)
+                outputs = net(inputsTimeTheta)
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
 
-                distArray = dist.cpu().detach().numpy()
-                distConstrainFlag=np.zeros_like(distArray)
-                for i in range(0,len(distConstrainFlag)):
-                    satisfiedNum=0
-                    # nU=300
-                    # uRangeLow=0
-                    # uRangeHigh=3
+                # distArray = dist.cpu().detach().numpy()
+                # distConstrainFlag=np.zeros_like(distArray)
+                # for i in range(0,len(distConstrainFlag)):
+                #     satisfiedNum=0
+                #     # nU=300
+                #     # uRangeLow=0
+                #     # uRangeHigh=3
 
-                    # if dataForConstraintsChoice=='mine':
-                    # nU=50
-                    # uRangeLow=0
-                    # uRangeHigh=250
-                    # uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
+                #     # if dataForConstraintsChoice=='mine':
+                #     # nU=50
+                #     # uRangeLow=0
+                #     # uRangeHigh=250
+                #     # uRandom=np.random.uniform(uRangeLow,uRangeHigh,nU)
 
-                    # nU=50
-                    # U_min = [0,3.00]
-                    # U_max = [6.804,3.56]
-                    # uRandom = np.random.uniform(low=U_min, high=U_max, size=(nU,2))
+                #     # nU=50
+                #     # U_min = [0,3.00]
+                #     # U_max = [6.804,3.56]
+                #     # uRandom = np.random.uniform(low=U_min, high=U_max, size=(nU,2))
 
-                    # uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
-                    # for k in uRandom:
-                    #     #if self.condition(inputsTheta[i],k):
-                    #     if constraintsFunc(inputsTheta[i],k,stateModel):
-                    #         #satisfiedNum=satisfiedNum+1
-                    #         satisfiedNum=1
-                    #         break
-                    # distConstrainFlag[i]=satisfiedNum
+                #     # uRandom=np.random.uniform(uRangeLow,uRangeHigh,size=(nU,uLength))
+                #     # for k in uRandom:
+                #     #     #if self.condition(inputsTheta[i],k):
+                #     #     if constraintsFunc(inputsTheta[i],k,stateModel):
+                #     #         #satisfiedNum=satisfiedNum+1
+                #     #         satisfiedNum=1
+                #     #         break
+                #     # distConstrainFlag[i]=satisfiedNum
 
-                    if constraintsFunc(inputsTheta[i]):
-                        satisfiedNum=1
-                    distConstrainFlag[i]=satisfiedNum
+                #     if constraintsFunc(inputsTheta[i]):
+                #         satisfiedNum=1
+                #     distConstrainFlag[i]=satisfiedNum
+                # distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
 
-                distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
+                distConstrainFlagTensor=inputsTimeFlag
                 ####check the satisfied theta
                 # logger.info(distConstrainFlagTensor)
 
