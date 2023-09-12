@@ -12,8 +12,8 @@ class MINE_netRC2D(BaseNet):
 
         #2d: 15
         #20: 50
-        rep = 128
-        output_dim=6
+        rep = 50
+        output_dim=3
         #output_dim=15
         self.rep_dim = output_dim
         
