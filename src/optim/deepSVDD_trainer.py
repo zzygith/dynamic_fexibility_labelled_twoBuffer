@@ -145,7 +145,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 #     distConstrainFlag[i]=satisfiedNum
                 # distConstrainFlagTensor=torch.tensor(distConstrainFlag).to(self.device)
 
-                distConstrainFlagTensor=inputsTimeFlag
+                distConstrainFlagTensor=inputsTimeFlag.reshape_as(dist)
                 ####check the satisfied theta
                 # logger.info(distConstrainFlagTensor)
 
