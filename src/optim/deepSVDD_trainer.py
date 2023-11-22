@@ -100,8 +100,10 @@ class DeepSVDDTrainer(BaseTrainer):
             for data in train_loader:
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
-                inputsTimeTheta=inputs[:,0:4]
-                inputsTimeFlag=inputs[:,4:5]
+                #inputsTimeTheta=inputs[:,0:4]
+                inputsTimeTheta=inputs[:,:-1,:] #除去最后一行flag
+                #inputsTimeFlag=inputs[:,4:5]
+                inputsTimeFlag=inputs[:,-1:,:][:,:,0:1].flatten() #提取最后一行flag
                 inputsTheta=inputs.cpu().detach().numpy()
                 #inputsTheta=inputsTheta.flatten()[0]
                 #logger.info(inputsTimeFlag)

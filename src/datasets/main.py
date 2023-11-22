@@ -2,6 +2,7 @@ from .mnist import MNIST_Dataset
 from .cifar10 import CIFAR10_Dataset
 from .mine import MINE_Dataset
 from .mineMultipleDen import MINEMD_Dataset
+from .mineMultipleDenConvol import MINEMDCONVOL_Dataset
 
 
 def load_dataset(dataset_name, data_path, normal_class):
@@ -21,5 +22,9 @@ def load_dataset(dataset_name, data_path, normal_class):
 
     if dataset_name == 'mine_reactorCooler_2d' or dataset_name == 'mine_dynamic_opt_numEX' or dataset_name == 'mine_dynamic_opt_numEX_thetaAndFlag' or dataset_name == 'mine_dynamic_opt_buffer_thetaAndFlag':
         dataset = MINEMD_Dataset(root=data_path, normal_class=normal_class)
+
+    if dataset_name == 'mine_dynamic_opt_twoBuffer_thetaAndFlag':
+        dataset = MINEMDCONVOL_Dataset(root=data_path, normal_class=normal_class)
+
 
     return dataset
