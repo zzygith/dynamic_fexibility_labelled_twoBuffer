@@ -101,7 +101,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
                 #inputsTimeTheta=inputs[:,0:4]
-                inputsTimeTheta=inputs[:,:-1,:] #除去最后一行flag
+                inputsTimeTheta=inputs[:,:-1,:][:,None] #除去最后一行flag
                 #inputsTimeFlag=inputs[:,4:5]
                 inputsTimeFlag=inputs[:,-1:,:][:,:,0:1].flatten() #提取最后一行flag
                 inputsTheta=inputs.cpu().detach().numpy()
@@ -154,7 +154,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 # satisfiedTheta = torch.where(distConstrainFlagTensor > 0, torch.flatten(inputs[:,0]), distConstrainFlagTensor)
 
                 #losses=torch.where(distConstrainFlagTensor > 0, self.satisfiedP*dist*distConstrainFlagTensor, self.eta * ((dist + self.eps)**self.penalty))
-                losses=torch.where(distConstrainFlagTensor > 0, self.satisfiedP*dist, self.eta * ((dist + self.eps)**self.penalty))
+                losses=torch.where(distConstrainFlagTensor > 0.1, self.satisfiedP*dist, self.eta * ((dist + self.eps)**self.penalty))
 
                 # logger.info(satisfiedTheta)
                 # logger.info(losses)
