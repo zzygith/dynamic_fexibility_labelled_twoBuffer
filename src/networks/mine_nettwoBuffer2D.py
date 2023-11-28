@@ -49,13 +49,13 @@ class MINE_nettwoBuffer2D(BaseNet):
         self.fc1 = nn.Linear(4 * 2 * 6, self.rep_dim)
 
     def forward(self, x):
-        x = F.tanh(self.conv1(x))
+        x = F.relu(self.conv1(x))
         #x = self.pool(F.leaky_relu(x))
-        x = F.tanh(self.conv2(x))
+        x = F.relu(self.conv2(x))
         #x = self.pool(F.leaky_relu(x))
-        x = F.tanh(self.conv3(x))
-        x = F.tanh(self.conv4(x))
-        x = F.tanh(self.conv5(x))
+        x = F.relu(self.conv3(x))
+        x = F.relu(self.conv4(x))
+        x = F.relu(self.conv5(x))
         x = x.view(x.size(0), -1)
         x = self.fc1(x)
         return x
